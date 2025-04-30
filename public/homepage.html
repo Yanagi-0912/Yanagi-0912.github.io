@@ -1,50 +1,36 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>個人網站</title>
-    <link rel="stylesheet" href="../style/homepage.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Portfolio</title>
+  <link rel="stylesheet" href="../style/homepage.css" />
 </head>
 <body>
-    <header>
-        <h1>歡迎</h1>
-        <nav>
-            <a href="#about">關於我</a>
-            <a href="#projects">專案</a>
-            <a href="#contact">聯絡我</a>
-        </nav>
-    </header>
+  <header>
+    <h1 id="title">你好</h1>
+    <nav>
+      <button onclick="setLanguage('zh')">中文</button>
+      <button onclick="setLanguage('en')">English</button>
+    </nav>
+  </header>
 
-    <section id="about">
-        <h2>關於我</h2>
-        <p></p>
-    </section>
+  <section class="intro fade-in">
+    <p id="intro-text">一位熱愛創造的資工男。</p>
+  </section>
 
-    <section id="projects">
-        <h2>我的專案</h2>
-        <div class="cards">
-            <div class="card">
-                <h3>大二網頁遊戲網站</h3>
-                <p><a href="https://github.com/Yanagi-0912/weblesson_maindesign" target=_blank>糞Game獵人</a></p>
-            </div>
-            <div class="card">
-                <h3></h3>
-                <p></p>
-            </div>
-            <div class="card">
-                <h3></h3>
-                <p></p>
-            </div>
-        </div>
-    <section id="contact">
-        <h2>聯絡我</h2>
-        <p>歡迎透過以下方式聯絡我：</p>
-        <ul>
-            <li>Email: <a href="mailto:930912jeffery@gmail.com">930912jeffery@gmail.com</a></li>
-            <li>GitHub: <a href="https://github.com/Yanagi-0912"target=_blank>Yanagi-0912</a></li>
-        </ul>
-    </section>
+  <section class="projects fade-in">
+    <h2 id="project-title">專案作品</h2>
+    <ul>
+      <li>糞Game獵人</li>
+      <li>智慧學習助理行事曆</li>
+    </ul>
+  </section>
 
+  <footer>
+    <p id="contact">聯絡我：example@email.com</p>
+  </footer>
+
+  <script src="../script/homepage.js"></script>
 </body>
 </html>
