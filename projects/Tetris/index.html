@@ -1,20 +1,36 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset='utf-8'>
-    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <title>Tetris Game</title>
-    <link rel='stylesheet' href='styles.css'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>俄羅斯方塊遊戲</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <div class="game-area">
+            <div class="controls-guide">
+                <h3>操作說明</h3>
+                <ul>
+                    <li>← → ：左右移動</li>
+                    <li>↓ ：向下移動</li>
+                    <li>空白鍵：快速落下</li>
+                    <li>Z ：逆時針旋轉</li>
+                    <li>↑ X ：順時針旋轉</li>
+                    <li>A ：旋轉 180°</li>
+                    <li>Shift/C ：保留方塊</li>
+                    <li>Esc ：暫停遊戲</li>
+                    <li>按住 R ：重新開始</li>
+                </ul>
+            </div>
             <canvas id="gameCanvas"></canvas>
             <div class="side-panel">
                 <div class="score">Score: <span id="score">0</span></div>
                 <button id="pauseBtn">Pause</button>
-                <button id="restartBtn">Restart</button>
+                <div class="hold-piece">
+                    <p>Hold:</p>
+                    <canvas id="holdCanvas"></canvas>
+                </div>
                 <div class="next-piece">
                     <p>Next:</p>
                     <canvas id="nextCanvas"></canvas>
@@ -25,15 +41,15 @@
                 </div>
             </div>
         </div>
-        <div id="gameOverModal" class="modal">
+        <div id="gameOverModal" class="modal" role="dialog" aria-labelledby="gameOverTitle">
             <div class="modal-content">
-                <h2>Game Over!</h2>
-                <p>Your score: <span id="finalScore">0</span></p>
-                <input type="text" id="playerName" placeholder="Enter your name">
-                <button id="submitScore">Submit Score</button>
+                <h2 id="gameOverTitle">遊戲結束！</h2>
+                <p>您的分數：<span id="finalScore">0</span></p>
+                <input type="text" id="playerName" placeholder="請輸入您的名字" aria-label="玩家名稱">
+                <button id="submitScore" aria-label="提交分數">提交分數</button>
             </div>
         </div>
     </div>
-    <script src="game.js"></script>
+    <script src="game.js" defer></script>
 </body>
 </html>

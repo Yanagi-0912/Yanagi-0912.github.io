@@ -14,6 +14,16 @@ class Tetris {
         this.nextCanvas.width = 4 * BLOCK_SIZE;
         this.nextCanvas.height = 4 * BLOCK_SIZE;
         
+        this.holdCanvas = document.getElementById('holdCanvas');
+        this.holdCtx = this.holdCanvas.getContext('2d');
+        this.holdCanvas.width = 4 * BLOCK_SIZE;
+        this.holdCanvas.height = 4 * BLOCK_SIZE;
+        
+        this.holdPiece = null;
+        this.canHold = true;
+        this.rKeyPressed = false;
+        this.rKeyTimer = null;
+
         this.reset();
         this.initControls();
         this.loadLeaderboard();
@@ -24,7 +34,8 @@ class Tetris {
         this.score = 0;
         this.gameOver = false;
         this.isPaused = false;
-        this.nextPiece = null;
+        this.holdPiece = null;
+        this.canHold = true;
         this.createNewPiece();
         document.getElementById('score').textContent = this.score;
     }
@@ -51,6 +62,7 @@ class Tetris {
         };
         
         this.drawNextPiece();
+        this.canHold = true;
         
         if (this.checkCollision()) {
             this.gameOver = true;
@@ -111,6 +123,30 @@ class Tetris {
     }
 
     rotate() {
+        // Changed to clockwise rotation
+        const rotated = this.currentPiece.shape[0].map((_, i) =>
+            this.currentPiece.shape.map(row => row[i]).reverse()
+        );
+        
+        const originalShape = this.currentPiece.shape;
+        this.currentPiece.shape = rotated;
+        
+        if (this.checkCollision()) {
+            this.currentPiece.shape = originalShape;
+        }
+    }
+
+    rotate180() {
+        const rotated = this.currentPiece.shape.map(row => [...row].reverse()).reverse();
+        const originalShape = this.currentPiece.shape;
+        this.currentPiece.shape = rotated;
+        
+        if (this.checkCollision()) {
+            this.currentPiece.shape = originalShape;
+        }
+    }
+
+    rotateCounterClockwise() {
         const rotated = this.currentPiece.shape[0].map((_, i) =>
             this.currentPiece.shape.map(row => row[row.length-1-i])
         );
@@ -123,6 +159,41 @@ class Tetris {
         }
     }
 
+    holdPieceFunc() {
+        if (!this.canHold) return;
+        
+        const currentShape = this.currentPiece.shape;
+        if (this.holdPiece === null) {
+            this.holdPiece = currentShape;
+            this.createNewPiece();
+        } else {
+            const tempShape = this.holdPiece;
+            this.holdPiece = currentShape;
+            this.currentPiece = {
+                shape: tempShape,
+                x: Math.floor(COLS/2) - 1,
+                y: 0
+            };
+        }
+        
+        this.canHold = false;
+        this.drawHoldPiece();
+    }
+
+    drawHoldPiece() {
+        this.holdCtx.clearRect(0, 0, this.holdCanvas.width, this.holdCanvas.height);
+        if (this.holdPiece) {
+            this.holdPiece.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value) {
+                        this.holdCtx.fillStyle = 'cyan';
+                        this.holdCtx.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE-1, BLOCK_SIZE-1);
+                    }
+                });
+            });
+        }
+    }
+
     moveDown() {
         this.currentPiece.y++;
         if (this.checkCollision()) {
@@ -130,6 +201,16 @@ class Tetris {
             this.mergePiece();
             this.createNewPiece();
         }
+        this.draw();
+    }
+
+    hardDrop() {
+        while (!this.checkCollision()) {
+            this.currentPiece.y++;
+        }
+        this.currentPiece.y--;
+        this.mergePiece();
+        this.createNewPiece();
         this.draw();
     }
 
@@ -177,20 +258,51 @@ class Tetris {
                 case 40: // Down
                     this.moveDown();
                     break;
-                case 38: // Up (Rotate)
+                case 88: // X
+                case 38: // Up
                     this.rotate();
+                    break;
+                case 90: // Z
+                    this.rotateCounterClockwise();
+                    break;
+                case 65: // A
+                    this.rotate180();
+                    break;
+                case 32: // Space (Hard drop)
+                    this.hardDrop();
+                    break;
+                case 27: // Esc (Pause)
+                    this.togglePause();
+                    break;
+                case 16: // Shift
+                case 67: // C
+                    this.holdPieceFunc();
+                    break;
+                case 82: // R
+                    if (!this.rKeyPressed) {
+                        this.rKeyPressed = true;
+                        this.rKeyTimer = setTimeout(() => {
+                            this.reset();
+                            this.start();
+                        }, 1000);
+                    }
                     break;
             }
             this.draw();
         });
 
-        document.getElementById('pauseBtn').addEventListener('click', () => {
-            this.togglePause();
+        document.addEventListener('keyup', event => {
+            if (event.keyCode === 82) { // R key
+                this.rKeyPressed = false;
+                if (this.rKeyTimer) {
+                    clearTimeout(this.rKeyTimer);
+                    this.rKeyTimer = null;
+                }
+            }
         });
 
-        document.getElementById('restartBtn').addEventListener('click', () => {
-            this.reset();
-            this.start();
+        document.getElementById('pauseBtn').addEventListener('click', () => {
+            this.togglePause();
         });
 
         document.getElementById('submitScore').addEventListener('click', () => {
@@ -245,20 +357,14 @@ class Tetris {
     }
 
     start() {
-        if (this.gameLoop) {
-            clearInterval(this.gameLoop);
-        }
-        this.reset();
+        if (this.gameLoop) clearInterval(this.gameLoop);
         this.gameLoop = setInterval(() => {
             if (!this.gameOver && !this.isPaused) {
                 this.moveDown();
-                this.draw();
             }
         }, 1000);
-        this.draw();
     }
 }
 
 const game = new Tetris();
 game.start();
-
