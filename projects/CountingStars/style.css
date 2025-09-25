@@ -1,0 +1,212 @@
+:root {
+    --primary-color: #4a90e2;
+    --secondary-color: #f5f5f5;
+    --background-color: #e9eef2;
+    --text-color: #333;
+    --border-color: #d1d9e0;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --danger-color: #e24a4a;
+    --success-color: #4ae28a;
+}
+
+body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+h1 {
+    color: var(--primary-color);
+}
+
+.add-list-form {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+#new-list-name {
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 16px;
+    width: 300px;
+    box-shadow: inset 0 1px 3px var(--shadow-color);
+}
+
+#add-list-btn, .action-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#add-list-btn:hover {
+    background-color: #357abd;
+}
+
+#lists-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    padding: 10px;
+}
+
+.list-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.list-header h2 {
+    margin: 0;
+    font-size: 1.5em;
+    color: var(--primary-color);
+}
+
+.delete-list-btn {
+    background: none;
+    border: none;
+    color: var(--danger-color);
+    font-size: 1.2em;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+.delete-list-btn:hover {
+    opacity: 1;
+}
+
+.add-item-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.add-item-form input {
+    flex-grow: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+}
+
+.add-item-btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 6px;
+    background-color: var(--success-color);
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.add-item-btn:hover {
+    background-color: #3abf70;
+}
+
+.list-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+    position: relative; /* For animation positioning */
+}
+
+.list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 8px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background-color: var(--secondary-color);
+    transition: transform 0.4s ease-in-out, background-color 0.3s; /* For animation */
+    will-change: transform;
+}
+
+.list-item:hover {
+    background-color: #e8e8e8;
+}
+
+.item-name {
+    flex-grow: 1;
+    margin: 0 10px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+}
+.item-name:hover {
+    background-color: #ddd;
+}
+
+.count-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+
+.minus-btn {
+    background-color: var(--danger-color);
+}
+.minus-btn:hover {
+    background-color: #c83a3a;
+}
+
+.plus-btn {
+    background-color: var(--success-color);
+}
+.plus-btn:hover {
+    background-color: #3abf70;
+}
+
+.item-count {
+    font-size: 1.2em;
+    font-weight: bold;
+    min-width: 40px;
+    text-align: center;
+}
+
+.item-edit-input {
+    flex-grow: 1;
+    margin: 0 10px;
+    padding: 5px;
+    border: 1px solid var(--primary-color);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: inherit;
+}
+
