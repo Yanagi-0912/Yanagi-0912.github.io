@@ -1,24 +1,47 @@
 # build output
 dist/
+coverage/
+
 # generated types
 .astro/
 
+# deployment output
+.vercel/
+.netlify/
+
 # dependencies
 node_modules/
+.pnpm-store/
 
 # logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
 
+
+# cache
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
 
 # environment variables
 .env
 .env.production
+.env.local
+.env.*.local
+!.env.example
 
 # macOS-specific files
 .DS_Store
+Thumbs.db
+Desktop.ini
 
-# jetbrains setting folder
+# IDE settings
 .idea/
+.vscode/*
+!.vscode/extensions.json
