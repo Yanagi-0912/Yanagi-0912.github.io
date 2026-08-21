@@ -90,6 +90,3 @@ npm run preview
 | `npm run preview` | 預覽正式版本 |
 | `npm run astro -- check` | 執行 Astro 檢查 |
 
-## 授權
-
-目前未設定正式授權條款；若要公開供他人使用或修改，請先補充適合的 License。

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>智慧居服排班系統 — 管理員介面雛型</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">照</span>
+    <div>
+      <h1>智慧居服排班系統</h1>
+      <p class="sub">AI 人力配置與服務產出效益分析 — 管理員介面雛型</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="datechip"><span class="k">排班日期</span><span class="v" id="dateLabel">—</span></div>
+    <button class="btn primary" id="btnSolve">重新排班</button>
+  </div>
+  <div class="progress" id="progress"><div class="bar" id="progressBar"></div></div>
+</header>
+
+<div class="layout">
+
+  <!-- ────────────────────────── 側邊欄 ────────────────────────── -->
+  <aside class="sidebar">
+
+    <section class="card">
+      <h2>營運指標</h2>
+      <div class="kpi-grid" id="kpiGrid"></div>
+      <div class="kpi-sub" id="kpiSub"></div>
+    </section>
+
+    <section class="card">
+      <h2>調整權重面板</h2>
+      <div class="slider-row">
+        <label>
+          <span class="slabel">θ　營運 ↔ 員工</span>
+          <span class="sval" id="valTheta">0.30</span>
+        </label>
+        <input type="range" id="theta" min="0" max="1" step="0.05" value="0.3">
+        <p class="hint" id="thetaHint"></p>
+      </div>
+      <div class="divider"><span>罰分內部權重 λ</span></div>
+      <div class="slider-row compact">
+        <label><span class="slabel">λ₁　壓力公平</span><span class="sval" id="valL1">0.40</span></label>
+        <input type="range" id="l1" min="0" max="1" step="0.05" value="0.4">
+      </div>
+      <div class="slider-row compact">
+        <label><span class="slabel">λ₂　個案偏好</span><span class="sval" id="valL2">0.40</span></label>
+        <input type="range" id="l2" min="0" max="1" step="0.05" value="0.4">
+      </div>
+      <div class="slider-row compact">
+        <label><span class="slabel">λ₃　空班時間</span><span class="sval" id="valL3">0.20</span></label>
+        <input type="range" id="l3" min="0" max="1" step="0.05" value="0.2">
+      </div>
+      <p class="hint">三項會自動正規化為總和 1</p>
+    </section>
+
+    <section class="card">
+      <h2>壓力指數分布</h2>
+      <div id="stressList" class="stress-list"></div>
+    </section>
+
+    <section class="card chat-card">
+      <h2>AI 對話窗口 <span class="tag">規則式模擬</span></h2>
+      <div class="chat-log" id="chatLog"></div>
+      <div class="chat-input">
+        <input type="text" id="chatText" placeholder="例：王淑芬請假 / 提高公平性 / 為什麼有案件沒排入">
+        <button class="btn primary sm" id="btnSend">送出</button>
+      </div>
+      <div class="chat-quick" id="chatQuick"></div>
+    </section>
+
+  </aside>
+
+  <!-- ────────────────────────── 主要區域 ────────────────────────── -->
+  <main class="main">
+
+    <section class="card">
+      <div class="card-head">
+        <h2>服務時間盒狀圖</h2>
+        <div class="nowctl">
+          <span class="k">模擬時間</span>
+          <input type="range" id="nowSlider" min="360" max="1080" step="5" value="600">
+          <span class="v" id="nowLabel">10:00</span>
+        </div>
+      </div>
+      <div class="gantt-wrap">
+        <div class="gantt" id="gantt"></div>
+      </div>
+      <div class="legend">
+        <span class="lg"><i class="sw serve"></i>服務</span>
+        <span class="lg"><i class="sw travel"></i>轉場</span>
+        <span class="lg"><i class="sw rest"></i>休息（空班 ≥ 30 分）</span>
+        <span class="lg"><i class="sw wait"></i>空班</span>
+        <span class="lg"><i class="sw nowline"></i>模擬時間</span>
+      </div>
+    </section>
+
+    <div class="split">
+      <section class="card">
+        <div class="card-head">
+          <h2>可視化服務個案平面圖</h2>
+          <label class="chk"><input type="checkbox" id="showRoutes" checked>顯示路線</label>
+        </div>
+        <div id="mapWrap" class="map-wrap"></div>
+        <div class="legend" id="mapLegend"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2 id="listTitle">當日案件清單</h2>
+          <button class="btn ghost sm" id="btnAdd">＋ 新增</button>
+        </div>
+        <div class="tabs" id="tabs">
+          <button data-tab="cases" class="active">當日案件</button>
+          <button data-tab="duty">可出勤員工</button>
+          <button data-tab="staff">員工清單</button>
+          <button data-tab="clients">服務個案</button>
+        </div>
+        <div class="table-wrap" id="tableWrap"></div>
+      </section>
+    </div>
+
+  </main>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <h3 id="modalTitle">編輯</h3>
+    <div id="modalBody" class="modal-body"></div>
+    <div class="modal-foot">
+      <button class="btn ghost" id="modalCancel">取消</button>
+      <button class="btn primary" id="modalSave">儲存</button>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="solver.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
