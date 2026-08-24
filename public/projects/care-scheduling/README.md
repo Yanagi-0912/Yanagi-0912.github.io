@@ -14,7 +14,7 @@
 | --- | --- |
 | `index.html` | 版面結構 |
 | `styles.css` | 白色基底 + 橙色主題 |
-| `data.js` | 模擬資料：`PARAMS`、6 名居服員、10 位服務個案、14 件當日案件 |
+| `data.js` | 模擬資料：`PARAMS`、6 名居服員、30 位服務個案、42 件當日案件（每人 5~9 件、服務時長 30/45/60 分） |
 | `solver.js` | 排班求解器（GA），可獨立於 Node 執行測試 |
 | `app.js` | 介面渲染與互動 |
 
@@ -51,6 +51,10 @@
 * **資料**：記憶體內的模擬資料，重新整理即還原
 
 ## 在 Node 中測試求解器
+
+> 注意：repo 根目錄的 `package.json` 含 `"type": "module"`，Node 會把本目錄的 `.js`
+> 視為 ESM 而使 `module.exports` 失效。請先將 `data.js`、`solver.js` 複製到 repo 之外再執行。
+> 瀏覽器端不受影響（皆為 classic script）。
 
 ```
 node -e "

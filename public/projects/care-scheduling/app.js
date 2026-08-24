@@ -27,6 +27,7 @@
   const hhmm = (m) => (m / 60).toFixed(1);
 
   const PAY_LABEL = { monthly: '月薪', hourly: '時薪', split: '拆帳' };
+  const SERVICE_LABEL = { short: '短時 30 分', mid: '中時 45 分', long: '長時 60 分' };
   const STATUS_LABEL = {
     serving: '服務中', traveling: '轉場中', resting: '休息中', off: '休假中', idle: '待命中',
   };
@@ -199,7 +200,7 @@
       <div class="r"><span>案件編號</span><b>${esc(k.id)}</b></div>
       <div class="r"><span>時間窗</span><b>${fmt(k.window.earliest)}–${fmt(k.window.latest)}</b></div>
       <div class="r"><span>安排時段</span><b>${stop ? fmt(stop.start) + '–' + fmt(stop.end) : '未排入'}</b></div>
-      <div class="r"><span>服務時長</span><b>${k.duration} 分（${k.serviceType === 'full' ? '全日' : '半日'}）</b></div>
+      <div class="r"><span>服務時長</span><b>${k.duration} 分（${SERVICE_LABEL[k.serviceType] || k.serviceType}）</b></div>
       <div class="r"><span>預估產出</span><b>$${money(k.revenue)}</b></div>
       <div class="r"><span>指派居服員</span><b>${k.assignedTo ? esc(nameOf(k.assignedTo)) : '—'}</b></div>
       <div class="r"><span>前次居服員</span><b>${cl.lastServedBy ? esc(nameOf(cl.lastServedBy)) : '—'}</b></div>
@@ -691,11 +692,11 @@
       openModal(k ? '修改案件' : '新增案件', [
         { key: 'clientId', label: '服務個案', type: 'select', value: k ? k.clientId : data.clients[0].id,
           options: data.clients.map((c) => ({ v: c.id, t: c.name + '（第 ' + c.careLevel + ' 級）' })) },
-        { key: 'serviceType', label: '服務類型', type: 'select', value: k ? k.serviceType : 'half',
-          options: [{ v: 'half', t: '半日' }, { v: 'full', t: '全日' }] },
+        { key: 'serviceType', label: '服務類型', type: 'select', value: k ? k.serviceType : 'mid',
+          options: [{ v: 'short', t: '短時（30 分）' }, { v: 'mid', t: '中時（45 分）' }, { v: 'long', t: '長時（60 分）' }] },
         { key: 'earliest', label: '最早可開始', value: k ? fmt(k.window.earliest) : '09:00' },
         { key: 'latest', label: '最晚可開始', value: k ? fmt(k.window.latest) : '09:30' },
-        { key: 'duration', label: '服務時長（分鐘）', value: k ? k.duration : 90 },
+        { key: 'duration', label: '服務時長（分鐘）', value: k ? k.duration : 45 },
       ], (f) => {
         const cl = data.clients.find((c) => c.id === f.clientId);
         const target = k || {
