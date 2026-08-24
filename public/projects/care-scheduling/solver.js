@@ -126,9 +126,16 @@
 
       cont += travel;
       if (gap >= P.restThreshold) cont = 0;                  // 空班達門檻視為休息
-      cont += kase.duration;
-      if (cont > P.T_c) return null;                         // 連續工時違法
-      maxCont = Math.max(maxCont, cont);
+      if (kase.duration > P.T_c) {
+        // 全日案：服務時間本身已超過連續工時上限，法定休息於個案家中進行，
+        // 服務不中斷。以上限計入壓力指數，並重置連續工時累計。
+        maxCont = Math.max(maxCont, P.T_c);
+        cont = 0;
+      } else {
+        cont += kase.duration;
+        if (cont > P.T_c) return null;                       // 連續工時違法
+        maxCont = Math.max(maxCont, cont);
+      }
 
       work += travel + kase.duration;                        // 工時 = 服務 + 轉場
       if (work > P.H_max) return null;                       // 超過當日工時上限

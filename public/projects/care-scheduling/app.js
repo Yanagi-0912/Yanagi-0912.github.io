@@ -27,12 +27,15 @@
   const hhmm = (m) => (m / 60).toFixed(1);
 
   const PAY_LABEL = { monthly: '月薪', hourly: '時薪', split: '拆帳' };
-  const SERVICE_LABEL = { short: '短時 30 分', mid: '中時 45 分', long: '長時 60 分' };
+  const SERVICE_LABEL = { short: '短時', mid: '中時', long: '長時',
+                          ext: '延長', halfday: '半日', fullday: '全日' };
   const STATUS_LABEL = {
-    serving: '服務中', traveling: '轉場中', resting: '休息中', off: '休假中', idle: '待命中',
+    serving: '服務中', traveling: '轉場中', resting: '休息中',
+    off: '休假中', idle: '待命中', before: '尚未上班', done: '已下班',
   };
   const STATUS_PILL = {
-    serving: 'g', traveling: 'o', resting: 'y', off: 'n', idle: 'n',
+    serving: 'g', traveling: 'o', resting: 'y',
+    off: 'n', idle: 'y', before: 'n', done: 'n',
   };
 
   /* ------------------------------------------------------------- 狀態 */
@@ -150,8 +153,17 @@
   function stateAt(w, now) {
     const rt = state.routeOf[w.id];
     if (w.onDuty === false) return { status: 'off', pos: w.home, caseId: null };
-    if (!rt) return { status: 'idle', pos: w.home, caseId: null };
-    if (now < rt.firstStart || now > rt.lastEnd) return { status: 'idle', pos: w.home, caseId: null };
+    if (now < w.available.start) return { status: 'before', pos: w.home, caseId: null };
+
+    // 無派案：可出勤時段結束前為待命，結束後為已下班
+    if (!rt) {
+      return now >= w.available.end
+        ? { status: 'done', pos: w.home, caseId: null }
+        : { status: 'idle', pos: w.home, caseId: null };
+    }
+    if (now < rt.firstStart) return { status: 'idle', pos: w.home, caseId: null };
+    // 最後一件案件結束即返家，視為已下班
+    if (now >= rt.lastEnd) return { status: 'done', pos: w.home, caseId: null };
 
     const ctx = state.ctx;
     let prevEnd = null, prevPos = w.home;
@@ -412,7 +424,8 @@
     // 即時定位
     data.caregivers.forEach((w) => {
       const st = stateAt(w, state.now);
-      if (!st.pos || st.status === 'off') return;
+      if (!st.pos || st.status === 'off'
+          || st.status === 'before' || st.status === 'done') return;
       svg += `<circle class="gps" cx="${st.pos.x}" cy="${st.pos.y}" r="46" fill="${colorOf(w.id)}"
         stroke-width="18"/>`;
       if (st.status === 'serving') {
@@ -683,7 +696,7 @@
         if (!c) data.clients.push(target);
         // 個案等級改變時重算收費
         data.cases.filter((k) => k.clientId === target.id).forEach((k) => {
-          k.revenue = data.PARAMS.revenue[k.serviceType][target.careLevel];
+          k.revenue = DATA.priceOf(k.duration, target.careLevel);
         });
       });
 
@@ -692,8 +705,6 @@
       openModal(k ? '修改案件' : '新增案件', [
         { key: 'clientId', label: '服務個案', type: 'select', value: k ? k.clientId : data.clients[0].id,
           options: data.clients.map((c) => ({ v: c.id, t: c.name + '（第 ' + c.careLevel + ' 級）' })) },
-        { key: 'serviceType', label: '服務類型', type: 'select', value: k ? k.serviceType : 'mid',
-          options: [{ v: 'short', t: '短時（30 分）' }, { v: 'mid', t: '中時（45 分）' }, { v: 'long', t: '長時（60 分）' }] },
         { key: 'earliest', label: '最早可開始', value: k ? fmt(k.window.earliest) : '09:00' },
         { key: 'latest', label: '最晚可開始', value: k ? fmt(k.window.latest) : '09:30' },
         { key: 'duration', label: '服務時長（分鐘）', value: k ? k.duration : 45 },
@@ -704,10 +715,10 @@
           date: data.DATE, actual: { arrivedAt: null, finishedAt: null },
         };
         Object.assign(target, {
-          clientId: f.clientId, serviceType: f.serviceType,
+          clientId: f.clientId, serviceType: DATA.typeOf(Number(f.duration) || 45),
           window: { earliest: parseTime(f.earliest) ?? 540, latest: parseTime(f.latest) ?? 570 },
           duration: Number(f.duration) || 90,
-          revenue: data.PARAMS.revenue[f.serviceType][cl.careLevel],
+          revenue: DATA.priceOf(Number(f.duration) || 45, cl.careLevel),
           assignedTo: null,
         });
         if (!k) data.cases.push(target);
