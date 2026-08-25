@@ -230,7 +230,7 @@
       <div class="r"><span>具備技能</span><b>${esc(skillNames(w.skills))}</b></div>
       <div class="r"><span>性格</span><b>${esc((w.personality || []).join('、'))}</b></div>
       <div class="r"><span>今日案件</span><b>${rt ? rt.stops.length : 0} 件</b></div>
-      <div class="r"><span>工時 / 空班</span><b>${rt ? hhmm(rt.workMinutes) + ' 小時 / ' + rt.idleMinutes + ' 分' : '—'}</b></div>
+      <div class="r"><span>工時 / 空班</span><b>${rt ? hhmm(rt.workMinutes) + ' / ' + hhmm(rt.idleMinutes) + ' 小時' : '—'}</b></div>
       <div class="r"><span>壓力指數</span><b>${rt ? rt.stress.S.toFixed(2) : '0.00'}</b></div>`;
   }
 
@@ -249,7 +249,7 @@
 
     $('kpiSub').innerHTML = `
       <div class="row"><span>交通成本</span><b>$${money(m.travelCost)}</b></div>
-      <div class="row"><span>總工時 / 總空班</span><b>${hhmm(m.workSum)} 小時 / ${m.idleSum} 分</b></div>
+      <div class="row"><span>總工時 / 總空班</span><b>${hhmm(m.workSum)} / ${hhmm(m.idleSum)} 小時</b></div>
       <div class="row"><span>P_fair　壓力不均</span><b>${m.pFair.toFixed(3)}</b></div>
       <div class="row"><span>P_pref　偏好未滿足</span><b>${m.pPref.toFixed(3)}</b></div>
       <div class="row"><span>P_idle　空班比例</span><b>${m.pIdle.toFixed(3)}</b></div>
