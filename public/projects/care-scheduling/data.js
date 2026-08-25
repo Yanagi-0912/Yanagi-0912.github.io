@@ -16,9 +16,8 @@
 
     omega: { 2: 1.0, 3: 1.2, 4: 1.3, 5: 1.5, 6: 1.6, 7: 1.8, 8: 2.0 },
     omegaMax: 2.0,
-    // 服務收費：依長照等級的時薪換算，長時案有級距折扣（見 priceOf）
+    // 服務收費：時薪 × 時數（時薪依長照等級）
     hourlyRate: { 2: 240, 3: 280, 4: 310, 5: 350, 6: 380, 7: 410, 8: 450 },
-    lengthDiscount: [[360, 0.85], [180, 0.90], [90, 0.95], [0, 1.00]],
 
     alpha: [0.3, 0.5, 0.2],    // 壓力指數三項：U_w, L_w, C_w
     lambda: [0.4, 0.4, 0.2],   // 罰分三項：P_fair, P_pref, P_idle
@@ -35,7 +34,7 @@
     rehab: '復能訓練',
   };
 
-  const DATE = '2026-08-25';
+  const DATE = '2026-01-01';
 
   const caregivers = [
     {
@@ -274,15 +273,12 @@
     ['C008', 985, 1015, 45],
   ];
 
-  // 服務類型由時長推導，收費 = 時薪 × 時數 × 級距折扣（取 5 元整數）
+  // 服務類型由時長推導，收費 = 時薪 × 時數（取 5 元整數）
   function typeOf(d) {
-    return d <= 30 ? 'short' : d <= 45 ? 'mid' : d <= 60 ? 'long'
-         : d <= 120 ? 'ext' : d < 360 ? 'halfday' : 'fullday';
+    return d <= 240 ? 'halfday' : 'fullday';   // 4 小時以內為半日
   }
   function priceOf(duration, careLevel) {
-    const rate = PARAMS.hourlyRate[careLevel];
-    const disc = PARAMS.lengthDiscount.find((r) => duration >= r[0])[1];
-    return Math.round(rate * (duration / 60) * disc / 5) * 5;
+    return Math.round(PARAMS.hourlyRate[careLevel] * (duration / 60) / 5) * 5;
   }
 
   const clientIndex = {};

@@ -27,8 +27,7 @@
   const hhmm = (m) => (m / 60).toFixed(1);
 
   const PAY_LABEL = { monthly: '月薪', hourly: '時薪', split: '拆帳' };
-  const SERVICE_LABEL = { short: '短時', mid: '中時', long: '長時',
-                          ext: '延長', halfday: '半日', fullday: '全日' };
+  const SERVICE_LABEL = { halfday: '半日', fullday: '全日' };
   const STATUS_LABEL = {
     serving: '服務中', traveling: '轉場中', resting: '休息中',
     off: '休假中', idle: '待命中', before: '尚未上班', done: '已下班',
@@ -707,7 +706,7 @@
           options: data.clients.map((c) => ({ v: c.id, t: c.name + '（第 ' + c.careLevel + ' 級）' })) },
         { key: 'earliest', label: '最早可開始', value: k ? fmt(k.window.earliest) : '09:00' },
         { key: 'latest', label: '最晚可開始', value: k ? fmt(k.window.latest) : '09:30' },
-        { key: 'duration', label: '服務時長（分鐘）', value: k ? k.duration : 45 },
+        { key: 'duration', label: '服務時長（分鐘）', value: k ? k.duration : 60 },
       ], (f) => {
         const cl = data.clients.find((c) => c.id === f.clientId);
         const target = k || {
@@ -715,10 +714,10 @@
           date: data.DATE, actual: { arrivedAt: null, finishedAt: null },
         };
         Object.assign(target, {
-          clientId: f.clientId, serviceType: DATA.typeOf(Number(f.duration) || 45),
+          clientId: f.clientId, serviceType: DATA.typeOf(Number(f.duration) || 60),
           window: { earliest: parseTime(f.earliest) ?? 540, latest: parseTime(f.latest) ?? 570 },
-          duration: Number(f.duration) || 90,
-          revenue: DATA.priceOf(Number(f.duration) || 45, cl.careLevel),
+          duration: Number(f.duration) || 60,
+          revenue: DATA.priceOf(Number(f.duration) || 60, cl.careLevel),
           assignedTo: null,
         });
         if (!k) data.cases.push(target);
